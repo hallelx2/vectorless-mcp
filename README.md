@@ -1,5 +1,5 @@
 <h1 align="center">
-  <code>@vectorless/mcp</code>
+  <code>vectorless-mcp</code>
 </h1>
 
 <p align="center">
@@ -7,7 +7,7 @@
 </p>
 
 <p align="center">
-  <a href="https://www.npmjs.com/package/@vectorless/mcp"><img src="https://img.shields.io/npm/v/@vectorless/mcp?style=flat-square&logo=npm&logoColor=white&color=CB3837" alt="npm" /></a>
+  <a href="https://www.npmjs.com/package/vectorless-mcp"><img src="https://img.shields.io/npm/v/vectorless-mcp?style=flat-square&logo=npm&logoColor=white&color=CB3837" alt="npm" /></a>
   <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-compatible-4A90D9?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PHBhdGggZD0iTTggMTJoOCIvPjxwYXRoIGQ9Ik0xMiA4djgiLz48L3N2Zz4=" alt="MCP" /></a>
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" /></a>
   <img src="https://img.shields.io/badge/node-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node 18+" />
@@ -28,7 +28,7 @@ Upload documents, explore their structure, and query them with natural language 
 ├─────────────────────────────────────────────────┤
 │              MCP Protocol (stdio)                │
 ├─────────────────────────────────────────────────┤
-│              @vectorless/mcp                     │
+│              vectorless-mcp                     │
 │                                                  │
 │  ┌─────────────────┐  ┌─────────────────────┐  │
 │  │  7 Tools         │  │  vectorless SDK     │  │
@@ -48,13 +48,13 @@ Upload documents, explore their structure, and query them with natural language 
 ### npx (no install)
 
 ```bash
-VECTORLESS_API_KEY=vl_... npx @vectorless/mcp
+VECTORLESS_API_KEY=vl_... npx vectorless-mcp
 ```
 
 ### Global install
 
 ```bash
-npm install -g @vectorless/mcp
+npm install -g vectorless-mcp
 VECTORLESS_API_KEY=vl_... vectorless-mcp
 ```
 
@@ -69,7 +69,7 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
   "mcpServers": {
     "vectorless": {
       "command": "npx",
-      "args": ["-y", "@vectorless/mcp"],
+      "args": ["-y", "vectorless-mcp"],
       "env": {
         "VECTORLESS_API_KEY": "vl_...",
         "VECTORLESS_BASE_URL": "http://localhost:8080"
@@ -88,7 +88,7 @@ Add to `.cursor/mcp.json` in your project:
   "mcpServers": {
     "vectorless": {
       "command": "npx",
-      "args": ["-y", "@vectorless/mcp"],
+      "args": ["-y", "vectorless-mcp"],
       "env": {
         "VECTORLESS_API_KEY": "vl_...",
         "VECTORLESS_BASE_URL": "http://localhost:8080"
@@ -107,7 +107,7 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
   "mcpServers": {
     "vectorless": {
       "command": "npx",
-      "args": ["-y", "@vectorless/mcp"],
+      "args": ["-y", "vectorless-mcp"],
       "env": {
         "VECTORLESS_API_KEY": "vl_...",
         "VECTORLESS_BASE_URL": "http://localhost:8080"
@@ -126,7 +126,7 @@ Add to `.claude/settings.json`:
   "mcpServers": {
     "vectorless": {
       "command": "npx",
-      "args": ["-y", "@vectorless/mcp"],
+      "args": ["-y", "vectorless-mcp"],
       "env": {
         "VECTORLESS_API_KEY": "vl_...",
         "VECTORLESS_BASE_URL": "http://localhost:8080"
