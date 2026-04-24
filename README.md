@@ -8,72 +8,64 @@
 
 <p align="center">
   <a href="https://www.npmjs.com/package/vectorless-mcp"><img src="https://img.shields.io/npm/v/vectorless-mcp?style=flat-square&logo=npm&logoColor=white&color=CB3837" alt="npm" /></a>
-  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-compatible-4A90D9?style=flat-square&logo=data:image/svg+xml;base64,PHN2ZyB4bWxucz0iaHR0cDovL3d3dy53My5vcmcvMjAwMC9zdmciIHdpZHRoPSIyNCIgaGVpZ2h0PSIyNCIgdmlld0JveD0iMCAwIDI0IDI0IiBmaWxsPSJub25lIiBzdHJva2U9IndoaXRlIiBzdHJva2Utd2lkdGg9IjIiPjxjaXJjbGUgY3g9IjEyIiBjeT0iMTIiIHI9IjEwIi8+PHBhdGggZD0iTTggMTJoOCIvPjxwYXRoIGQ9Ik0xMiA4djgiLz48L3N2Zz4=" alt="MCP" /></a>
+  <a href="https://modelcontextprotocol.io"><img src="https://img.shields.io/badge/MCP-compatible-4A90D9?style=flat-square" alt="MCP" /></a>
+  <img src="https://img.shields.io/badge/OAuth_2.1-PKCE-green?style=flat-square" alt="OAuth" />
+  <img src="https://img.shields.io/badge/transport-Streamable_HTTP-blue?style=flat-square" alt="Streamable HTTP" />
   <a href="LICENSE"><img src="https://img.shields.io/badge/license-MIT-blue?style=flat-square" alt="License" /></a>
-  <img src="https://img.shields.io/badge/node-%3E%3D18-339933?style=flat-square&logo=node.js&logoColor=white" alt="Node 18+" />
 </p>
 
 ---
 
-## What is this?
+## How It Works
 
-An [MCP (Model Context Protocol)](https://modelcontextprotocol.io) server that lets AI assistants — Claude, Cursor, Windsurf, and any MCP-compatible client — interact with your Vectorless document retrieval system.
+Vectorless provides a **remote MCP server** at `https://api.vectorless.store/mcp`. Your AI assistant connects to it directly over the internet — no local process, no API keys to manage.
 
-Upload documents, explore their structure, and query them with natural language — all through your AI assistant.
+Authentication uses **OAuth 2.1 with PKCE**: on first connect your AI client opens the Vectorless dashboard where you log in and approve access. After that, it just works.
 
 ```
-┌─────────────────────────────────────────────────┐
-│              AI Assistant                        │
-│  (Claude Desktop / Cursor / Windsurf / etc.)     │
-├─────────────────────────────────────────────────┤
-│              MCP Protocol (stdio)                │
-├─────────────────────────────────────────────────┤
-│              vectorless-mcp                     │
-│                                                  │
-│  ┌─────────────────┐  ┌─────────────────────┐  │
-│  │  7 Tools         │  │  vectorless SDK     │  │
-│  │  list, ingest,   │  │  (npm: vectorless)  │  │
-│  │  tree, section,  │  │  HTTP or Connect    │  │
-│  │  query, delete   │  │  transport          │  │
-│  └─────────────────┘  └──────────┬──────────┘  │
-│                                   │              │
-├───────────────────────────────────┼──────────────┤
-│                    Vectorless Server              │
-│         (self-hosted or api.vectorless.dev)       │
-└─────────────────────────────────────────────────┘
+┌──────────────────────────────────────────────────────────────┐
+│        Claude Desktop / Cursor / Windsurf / Claude Code      │
+│                                                              │
+│   1. Add the remote MCP URL                                  │
+│   2. OAuth redirect → Vectorless Dashboard (login + consent) │
+│   3. Token issued → MCP session active                       │
+│   4. AI calls tools via Streamable HTTP + SSE                │
+└───────────────────────────┬──────────────────────────────────┘
+                            │
+                            │  Streamable HTTP + SSE
+                            ▼
+┌──────────────────────────────────────────────────────────────┐
+│                  api.vectorless.store/mcp                     │
+│                                                              │
+│   OAuth 2.1 (PKCE)          7 Tools                          │
+│   ┌──────────────────┐      ┌──────────────────────────┐    │
+│   │ /.well-known/    │      │ vectorless_list_documents │    │
+│   │   oauth-*        │      │ vectorless_ingest_document│    │
+│   │ /oauth/authorize │      │ vectorless_get_document   │    │
+│   │ /oauth/token     │      │ vectorless_get_tree       │    │
+│   │ /oauth/register  │      │ vectorless_get_section    │    │
+│   └──────────────────┘      │ vectorless_query          │    │
+│                              │ vectorless_delete_document│    │
+│   Scopes:                    └──────────────────────────┘    │
+│   • documents:read                                           │
+│   • documents:write          Vectorless Engine               │
+│   • query                    (retrieval + ingestion)         │
+└──────────────────────────────────────────────────────────────┘
 ```
 
-## Quick Start
+## Setup (Remote — Recommended)
 
-### npx (no install)
-
-```bash
-VECTORLESS_API_KEY=vl_... npx vectorless-mcp
-```
-
-### Global install
-
-```bash
-npm install -g vectorless-mcp
-VECTORLESS_API_KEY=vl_... vectorless-mcp
-```
-
-## Configuration
+Add the remote URL to your AI client config. **No installation needed.**
 
 ### Claude Desktop
 
-Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS) or `%APPDATA%\Claude\claude_desktop_config.json` (Windows):
+`Settings → Developer → Edit Config`:
 
 ```json
 {
   "mcpServers": {
     "vectorless": {
-      "command": "npx",
-      "args": ["-y", "vectorless-mcp"],
-      "env": {
-        "VECTORLESS_API_KEY": "vl_...",
-        "VECTORLESS_BASE_URL": "http://localhost:8080"
-      }
+      "url": "https://api.vectorless.store/mcp"
     }
   }
 }
@@ -81,18 +73,13 @@ Add to `~/Library/Application Support/Claude/claude_desktop_config.json` (macOS)
 
 ### Cursor
 
-Add to `.cursor/mcp.json` in your project:
+`.cursor/mcp.json`:
 
 ```json
 {
   "mcpServers": {
     "vectorless": {
-      "command": "npx",
-      "args": ["-y", "vectorless-mcp"],
-      "env": {
-        "VECTORLESS_API_KEY": "vl_...",
-        "VECTORLESS_BASE_URL": "http://localhost:8080"
-      }
+      "url": "https://api.vectorless.store/mcp"
     }
   }
 }
@@ -100,18 +87,13 @@ Add to `.cursor/mcp.json` in your project:
 
 ### Windsurf
 
-Add to `~/.codeium/windsurf/mcp_config.json`:
+`~/.codeium/windsurf/mcp_config.json`:
 
 ```json
 {
   "mcpServers": {
     "vectorless": {
-      "command": "npx",
-      "args": ["-y", "vectorless-mcp"],
-      "env": {
-        "VECTORLESS_API_KEY": "vl_...",
-        "VECTORLESS_BASE_URL": "http://localhost:8080"
-      }
+      "url": "https://api.vectorless.store/mcp"
     }
   }
 }
@@ -119,7 +101,91 @@ Add to `~/.codeium/windsurf/mcp_config.json`:
 
 ### Claude Code
 
-Add to `.claude/settings.json`:
+`.claude/settings.json`:
+
+```json
+{
+  "mcpServers": {
+    "vectorless": {
+      "url": "https://api.vectorless.store/mcp"
+    }
+  }
+}
+```
+
+That's it. On first use, your AI client opens the Vectorless dashboard in your browser. Log in (Google, GitHub, or email), approve the permissions, and you're connected.
+
+## OAuth Scopes
+
+When you authorize, the consent screen shows these permissions:
+
+| Scope | Grants access to |
+|-------|-----------------|
+| **`documents:read`** | List documents, get metadata, browse tree, fetch sections |
+| **`documents:write`** | Upload new documents, delete existing ones |
+| **`query`** | Run natural language queries against documents |
+
+You choose which scopes to grant. The AI agent can only use tools matching your approved scopes.
+
+## Available Tools
+
+### `vectorless_list_documents`
+List all your documents with status, metadata, and pagination.
+
+### `vectorless_ingest_document`
+Upload a document from a URL or base64 content. Supports PDF, DOCX, Markdown, HTML, plain text. Documents are parsed into hierarchical section trees with AI-generated summaries.
+
+### `vectorless_get_document`
+Get metadata and processing status for a document (pending → parsing → summarizing → ready).
+
+### `vectorless_get_tree`
+View the hierarchical outline — sections with titles, summaries, depth, and token counts. Use this to understand what's in a document before querying.
+
+### `vectorless_get_section`
+Fetch the full content of a specific section by ID.
+
+### `vectorless_query`
+Ask a natural language question. An LLM navigates the document tree to find and return the most relevant sections with full content, strategy, timing, and cost.
+
+### `vectorless_delete_document`
+Permanently delete a document and all its sections.
+
+## Example Conversation
+
+```
+You:    Upload this paper: https://arxiv.org/pdf/2301.00001
+Claude: [calls vectorless_ingest_document]
+        Done — doc_abc123 is ready (14 sections, 48,200 tokens).
+
+You:    What's the structure?
+Claude: [calls vectorless_get_tree]
+        Introduction (1,200 tokens)
+          Background (800 tokens)
+          Related Work (2,400 tokens)
+        Methodology (3,600 tokens)
+          Data Collection (1,100 tokens)
+          Model Architecture (2,500 tokens)
+        Results (4,200 tokens)
+        Conclusion (900 tokens)
+
+You:    What model architecture did they use?
+Claude: [calls vectorless_query]
+        Found 2 relevant sections (chunked-tree, 340ms):
+
+        ## Model Architecture
+        We employ a transformer-based encoder with 12 attention heads...
+
+        ## Results
+        The model achieved 94.2% accuracy on the benchmark...
+```
+
+## Fallback: Local Stdio Server
+
+If your MCP client doesn't support remote servers, run the stdio bridge locally:
+
+```bash
+npx vectorless-mcp
+```
 
 ```json
 {
@@ -128,116 +194,49 @@ Add to `.claude/settings.json`:
       "command": "npx",
       "args": ["-y", "vectorless-mcp"],
       "env": {
-        "VECTORLESS_API_KEY": "vl_...",
-        "VECTORLESS_BASE_URL": "http://localhost:8080"
+        "VECTORLESS_API_KEY": "vl_..."
       }
     }
   }
 }
 ```
 
-## Environment Variables
+| Variable | Default | Description |
+|----------|---------|-------------|
+| `VECTORLESS_API_KEY` | — | API key (required for remote, optional for self-hosted) |
+| `VECTORLESS_BASE_URL` | `https://api.vectorless.store` | Server URL |
+| `VECTORLESS_TRANSPORT` | `http` | Wire protocol (`http` or `connect`) |
 
-| Variable | Required | Default | Description |
-|----------|----------|---------|-------------|
-| `VECTORLESS_API_KEY` | For deployed | — | Bearer token for authentication |
-| `VECTORLESS_BASE_URL` | No | `http://localhost:8080` | Server URL |
-| `VECTORLESS_TRANSPORT` | No | `http` | Wire protocol (`http` or `connect`) |
+## Self-Hosted
 
-## Available Tools
+Point the MCP to your own Vectorless instance:
 
-### `vectorless_list_documents`
-
-List all documents with pagination and status filtering.
-
-```
-> List my documents
-
-Found 3 documents:
-- "ML Research Paper" (ready, 245KB)
-- "API Documentation" (ready, 89KB)
-- "Quarterly Report" (processing)
+```json
+{
+  "mcpServers": {
+    "vectorless": {
+      "url": "https://your-server.com/mcp"
+    }
+  }
+}
 ```
 
-### `vectorless_ingest_document`
+Or via stdio:
 
-Upload a document from a URL or base64 content.
-
+```json
+{
+  "mcpServers": {
+    "vectorless": {
+      "command": "npx",
+      "args": ["-y", "vectorless-mcp"],
+      "env": {
+        "VECTORLESS_BASE_URL": "https://your-server.com",
+        "VECTORLESS_API_KEY": "your-key"
+      }
+    }
+  }
+}
 ```
-> Upload this paper: https://example.com/paper.pdf
-
-Ingesting paper.pdf...
-Status: pending → parsing → summarizing → ready
-Document doc_abc123 is ready (12 sections, 45,230 tokens)
-```
-
-### `vectorless_get_tree`
-
-Explore the document's hierarchical structure.
-
-```
-> Show me the structure of doc_abc123
-
-Introduction (1,245 tokens)
-  Background (890 tokens)
-  Related Work (2,100 tokens)
-Methodology (3,450 tokens)
-  Data Collection (1,200 tokens)
-  Model Architecture (2,250 tokens)
-Results (4,100 tokens)
-  Quantitative (2,300 tokens)
-  Qualitative (1,800 tokens)
-Conclusion (980 tokens)
-```
-
-### `vectorless_get_section`
-
-Fetch the full content of a specific section.
-
-```
-> Show me the Methodology section
-
-## Methodology
-We employed a mixed-methods approach combining quantitative analysis
-with qualitative interviews. Our dataset consists of...
-[full section content]
-```
-
-### `vectorless_query`
-
-Ask a question — the LLM finds the most relevant sections.
-
-```
-> What model architecture was used?
-
-Found 2 relevant sections (chunked-tree strategy, 340ms):
-
-[Model Architecture]
-We use a transformer-based encoder with 12 attention heads...
-
-[Results - Quantitative]
-The model achieved 94.2% accuracy on the test set...
-```
-
-### `vectorless_delete_document`
-
-Permanently delete a document.
-
-```
-> Delete doc_abc123
-
-Document doc_abc123 has been permanently deleted.
-```
-
-## How It Works
-
-1. **Ingest** — upload documents (PDF, DOCX, MD, HTML, TXT). Vectorless parses them into hierarchical trees and summarizes each section.
-
-2. **Explore** — use `get_tree` to see the document outline. Use `get_section` to read specific sections.
-
-3. **Query** — ask natural language questions. An LLM navigates the tree structure to find the most relevant sections — no embeddings, no vector databases.
-
-4. **Retrieve** — get full section content with complete context preserved. Every section is citation-ready.
 
 ## License
 

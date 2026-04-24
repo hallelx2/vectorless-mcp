@@ -30,10 +30,10 @@ import {
 // ── Configuration ──
 
 const apiKey = process.env.VECTORLESS_API_KEY;
-const baseUrl = process.env.VECTORLESS_BASE_URL ?? "http://localhost:8080";
+const baseUrl = process.env.VECTORLESS_BASE_URL ?? "https://api.vectorless.store";
 const transport = (process.env.VECTORLESS_TRANSPORT ?? "http") as "http" | "connect";
 
-if (!apiKey && baseUrl.includes("vectorless.dev")) {
+if (!apiKey && !baseUrl.includes("localhost")) {
   console.error(
     "Error: VECTORLESS_API_KEY is required for deployed instances.\n" +
       "Set it in your environment or MCP client configuration.\n" +
