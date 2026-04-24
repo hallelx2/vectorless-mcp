@@ -1,0 +1,47 @@
+{
+  "name": "@vectorless/mcp",
+  "version": "1.0.0",
+  "description": "MCP server for Vectorless — give AI agents access to structure-preserving document retrieval",
+  "type": "module",
+  "main": "./dist/index.js",
+  "bin": {
+    "vectorless-mcp": "./dist/index.js"
+  },
+  "files": ["dist", "README.md", "LICENSE"],
+  "scripts": {
+    "build": "tsup",
+    "dev": "tsup --watch",
+    "typecheck": "tsc --noEmit",
+    "start": "node dist/index.js"
+  },
+  "dependencies": {
+    "@modelcontextprotocol/sdk": "^1.12.1",
+    "vectorless": "^1.0.1",
+    "zod": "^3.25.0",
+    "zod-to-json-schema": "^3.24.5"
+  },
+  "devDependencies": {
+    "@types/node": "^20",
+    "tsup": "^8.5.0",
+    "typescript": "^5.9.0"
+  },
+  "engines": { "node": ">=18" },
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/hallelx2/vectorless-mcp"
+  },
+  "homepage": "https://vectorless.dev",
+  "keywords": [
+    "vectorless",
+    "mcp",
+    "model-context-protocol",
+    "ai-tools",
+    "document-retrieval",
+    "claude",
+    "cursor"
+  ],
+  "publishConfig": {
+    "access": "public"
+  }
+}
