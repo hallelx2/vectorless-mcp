@@ -1,47 +1,43 @@
 {
   "name": "vectorless-mcp",
-  "version": "1.0.1",
-  "description": "MCP server for Vectorless — give AI agents access to structure-preserving document retrieval",
-  "type": "module",
-  "main": "./dist/index.js",
-  "bin": {
-    "vectorless-mcp": "./dist/index.js"
-  },
-  "files": ["dist", "README.md", "LICENSE"],
+  "version": "1.0.0",
+  "private": true,
+  "description": "Vectorless MCP service — remote Model Context Protocol server with OAuth 2.1",
   "scripts": {
-    "build": "tsup",
-    "dev": "tsup --watch",
+    "dev": "next dev --turbo",
+    "build": "next build",
+    "start": "next start",
+    "lint": "next lint",
     "typecheck": "tsc --noEmit",
-    "start": "node dist/index.js"
+    "db:generate": "drizzle-kit generate",
+    "db:migrate": "drizzle-kit migrate",
+    "db:push": "drizzle-kit push",
+    "db:studio": "drizzle-kit studio"
   },
   "dependencies": {
-    "@modelcontextprotocol/sdk": "^1.12.1",
+    "@modelcontextprotocol/sdk": "^1.18.0",
+    "@neondatabase/serverless": "^1.0.0",
+    "better-auth": "^1.2.0",
+    "drizzle-orm": "^0.41.0",
+    "jose": "^5.9.0",
+    "next": "15.1.0",
+    "react": "19.0.0",
+    "react-dom": "19.0.0",
     "vectorless": "^1.0.1",
-    "zod": "^3.25.0",
-    "zod-to-json-schema": "^3.24.5"
+    "zod": "^3.23.0"
   },
   "devDependencies": {
-    "@types/node": "^20",
-    "tsup": "^8.5.0",
-    "typescript": "^5.9.0"
+    "@types/node": "^20.16.0",
+    "@types/react": "^19.0.0",
+    "@types/react-dom": "^19.0.0",
+    "drizzle-kit": "^0.30.0",
+    "eslint": "^9.0.0",
+    "eslint-config-next": "15.1.0",
+    "postcss": "^8.4.0",
+    "tailwindcss": "^3.4.0",
+    "typescript": "^5.6.0"
   },
-  "engines": { "node": ">=18" },
-  "license": "MIT",
-  "repository": {
-    "type": "git",
-    "url": "https://github.com/hallelx2/vectorless-mcp"
-  },
-  "homepage": "https://vectorless.dev",
-  "keywords": [
-    "vectorless",
-    "mcp",
-    "model-context-protocol",
-    "ai-tools",
-    "document-retrieval",
-    "claude",
-    "cursor"
-  ],
-  "publishConfig": {
-    "access": "public"
+  "engines": {
+    "node": ">=20"
   }
 }
